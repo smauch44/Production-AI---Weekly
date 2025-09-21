@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Terraform (ignore state + providers + local vars)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.backup
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+student.tfvars.json
+
+# Ignore the entire terraform folder (keep only acr-terraform/)
+terraform/
+
+# Python cache
+__pycache__/
+*.pyc
