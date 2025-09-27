@@ -1,0 +1,12 @@
+acr: dkimacruse123.azurecr.io
+
+gateway:
+  image: gateway-service
+  tag: latest
+  port: 5000
+
+myGPUApp:
+  image: my-gpu-app
+  tag: latest
+  replicas: 1
+  port: 8000

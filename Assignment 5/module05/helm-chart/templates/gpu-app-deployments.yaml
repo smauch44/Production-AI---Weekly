@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-app1
+spec:
+  replicas: {{ .Values.myGPUApp.replicas }}
+  selector: { matchLabels: { app: gpu-app1 } }
+  template:
+    metadata: { labels: { app: gpu-app1 } }
+    spec:
+      imagePullSecrets: [ { name: acr-secret } ]
+      nodeSelector:
+        kubernetes.azure.com/accelerator: nvidia
+      tolerations:
+        - key: "sku"
+          operator: "Equal"
+          value: "gpu"
+          effect: "NoSchedule"
+      containers:
+        - name: gpu-app1
+          image: {{ .Values.acr }}/{{ .Values.myGPUApp.image }}:{{ .Values.myGPUApp.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.myGPUApp.port }}
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          readinessProbe:
+            httpGet: { path: /status, port: {{ .Values.myGPUApp.port }} }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /status, port: {{ .Values.myGPUApp.port }} }
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-app2
+spec:
+  replicas: {{ .Values.myGPUApp.replicas }}
+  selector: { matchLabels: { app: gpu-app2 } }
+  template:
+    metadata: { labels: { app: gpu-app2 } }
+    spec:
+      imagePullSecrets: [ { name: acr-secret } ]
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.azure.com/accelerator
+                    operator: DoesNotExist
+      containers:
+        - name: gpu-app2
+          image: {{ .Values.acr }}/{{ .Values.myGPUApp.image }}:{{ .Values.myGPUApp.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.myGPUApp.port }}
+          readinessProbe:
+            httpGet: { path: /status, port: {{ .Values.myGPUApp.port }} }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /status, port: {{ .Values.myGPUApp.port }} }
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-app3
+spec:
+  replicas: {{ .Values.myGPUApp.replicas }}
+  selector: { matchLabels: { app: gpu-app3 } }
+  template:
+    metadata: { labels: { app: gpu-app3 } }
+    spec:
+      imagePullSecrets: [ { name: acr-secret } ]
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.azure.com/accelerator
+                    operator: DoesNotExist
+      containers:
+        - name: gpu-app3
+          image: {{ .Values.acr }}/{{ .Values.myGPUApp.image }}:{{ .Values.myGPUApp.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.myGPUApp.port }}
+          readinessProbe:
+            httpGet: { path: /status, port: {{ .Values.myGPUApp.port }} }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /status, port: {{ .Values.myGPUApp.port }} }
+            initialDelaySeconds: 15
+            periodSeconds: 20

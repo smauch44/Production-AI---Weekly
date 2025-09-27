@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpu-app1
+  labels: { app: gpu-app1 }
+spec:
+  type: ClusterIP
+  selector: { app: gpu-app1 }
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.myGPUApp.port }}
+      targetPort: {{ .Values.myGPUApp.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpu-app2
+  labels: { app: gpu-app2 }
+spec:
+  type: ClusterIP
+  selector: { app: gpu-app2 }
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.myGPUApp.port }}
+      targetPort: {{ .Values.myGPUApp.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpu-app3
+  labels: { app: gpu-app3 }
+spec:
+  type: ClusterIP
+  selector: { app: gpu-app3 }
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.myGPUApp.port }}
+      targetPort: {{ .Values.myGPUApp.port }}

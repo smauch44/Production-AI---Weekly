@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: gateway }
+  template:
+    metadata:
+      labels: { app: gateway }
+    spec:
+      imagePullSecrets:
+        - name: acr-secret
+      containers:
+        - name: gateway
+          image: {{ .Values.acr }}/{{ .Values.gateway.image }}:{{ .Values.gateway.tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.gateway.port }}
+          env:
+            - name: GPU_APP_URLS
+              value: "http://gpu-app1:8000,http://gpu-app2:8000,http://gpu-app3:8000"
+          readinessProbe:
+            httpGet: { path: /aggregate, port: {{ .Values.gateway.port }} }
+            initialDelaySeconds: 10
+            periodSeconds: 15
